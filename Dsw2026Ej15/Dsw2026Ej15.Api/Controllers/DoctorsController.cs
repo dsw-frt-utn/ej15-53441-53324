@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Dsw2026Ej15.Domain.Entities;
 using Dsw2026Ej15.Domain;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Dsw2026Ej15.Api.Controllers
 {
@@ -8,90 +11,66 @@ namespace Dsw2026Ej15.Api.Controllers
 	[Route("api/doctors")]
 	public class DoctorsController : ControllerBase
 	{
-		private readonly IPersistence _persistence;
+		private readonly IPersistance _persistence;
 
-		// El constructor recibe la persistencia en memoria de tu amiga
-		public DoctorsController(IPersistence persistence)
+		public DoctorsController(IPersistance persistence)
 		{
 			_persistence = persistence;
 		}
 
-		// 1. PRIMER ENDPOINT: POST api/doctors (Agregar Médico)
 		[HttpPost]
-		public IActionResult CreateDoctor([FromBody] DoctorRequest request)
+		public async Task<IActionResult> CreateDoctor([FromBody] DoctorModel.Request request)
 		{
-			if (string.IsNullOrWhiteSpace(request.Name))
+			if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.LicenseNumber))
 			{
-				return BadRequest("Name es requerido.");
-			}
-
-			if (string.IsNullOrWhiteSpace(request.LicenseNumber))
-			{
-				return BadRequest("LicenseNumber es requerido.");
+				throw new ValidationException("Nombre y matricula son requeridos.");
 			}
 
 			var specialities = _persistence.GetSpecialities();
-			var specialityExists = specialities.Any(s => s.Id == request.SpecialityId);
+			var speciality = specialities.SingleOrDefault(s => s.Id == request.SpecialityId);
 
-			if (!specialityExists)
+			if (speciality == null)
 			{
-				return BadRequest("SpecialityId debe existir.");
+				throw new ValidationException("La especialidad especificada no existe.");
 			}
 
-			var newDoctor = new Doctor
-			{
-				Id = Guid.NewGuid(),
-				Name = request.Name,
-				LicenseNumber = request.LicenseNumber,
-				IsActive = true
-			};
+			var newDoctor = new Doctor(request.Name, request.LicenseNumber, speciality);
 
 			_persistence.SaveDoctor(newDoctor);
 
 			return Created($"api/doctors/{newDoctor.Id}", newDoctor);
 		}
 
-		// 2. SEGUNDO ENDPOINT: GET api/doctors (Listar todos)
 		[HttpGet]
-		public IActionResult GetAllDoctors()
+		public async Task<IActionResult> GetAllDoctors()
 		{
-			var doctors = _persistence.GetDoctors();
-			return Ok(doctors);
+			var activeDoctors = _persistence.GetDoctors().Where(d => d.IsActive).ToList();
+			return Ok(activeDoctors);
 		}
 
-		// 3. TERCER ENDPOINT: GET api/doctors/{id} (Buscar por ID)
 		[HttpGet("{id}")]
-		public IActionResult GetDoctorById(Guid id)
+		public async Task<IActionResult> GetDoctorById(Guid id)
 		{
 			var doctor = _persistence.GetDoctors().FirstOrDefault(d => d.Id == id);
 
 			if (doctor == null || !doctor.IsActive)
 			{
-				return NotFound("El médico no existe o está inactivo.");
+				throw new NotFoundException("El médico no existe o está inactivo.");
 			}
 
-			var speciality = _persistence.GetSpecialities().FirstOrDefault(s => s.Id == doctor.SpecialityId);
-			var specialityName = speciality != null ? speciality.Name : "Desconocida";
-
-			var response = new
-			{
-				doctor.Name,
-				doctor.LicenseNumber,
-				SpecialityName = specialityName
-			};
+			var response = new DoctorModel.Response(doctor.Name, doctor.LicenseNumber, doctor.Speciality.Name);
 
 			return Ok(response);
 		}
 
-		// 4. CUARTO ENDPOINT: DELETE api/doctors/{id} (Dar de baja / Inactivar)
 		[HttpDelete("{id}")]
-		public IActionResult DeleteDoctor(Guid id)
+		public async Task<IActionResult> DeleteDoctor(Guid id)
 		{
 			var doctor = _persistence.GetDoctors().FirstOrDefault(d => d.Id == id);
 
-			if (doctor == null)
+			if (doctor == null || !doctor.IsActive)
 			{
-				return NotFound("Médico no encontrado.");
+				throw new NotFoundException("El médico no se encuentra activo o no existe.");
 			}
 
 			doctor.IsActive = false;
@@ -100,11 +79,9 @@ namespace Dsw2026Ej15.Api.Controllers
 		}
 	}
 
-	// Esta clase ayuda a recibir el JSON que nos manden
-	public class DoctorRequest
+	public record DoctorModel
 	{
-		public string Name { get; set; }
-		public string LicenseNumber { get; set; }
-		public Guid SpecialityId { get; set; }
+		public record Request(string Name, string LicenseNumber, Guid SpecialityId);
+		public record Response(string Name, string LicenseNumber, string SpecialityName);
 	}
-} 
+}
