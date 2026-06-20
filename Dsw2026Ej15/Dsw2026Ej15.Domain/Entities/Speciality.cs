@@ -6,7 +6,7 @@ namespace Dsw2026Ej15.Domain.Entities
 {
     public class Speciality : BaseEntity
     {
-        string _name;
-        string _description;
+        public string _name { get; set; }
+        public string _description { get; set; }
     }
 }
