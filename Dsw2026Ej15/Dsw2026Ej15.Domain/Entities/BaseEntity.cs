@@ -2,7 +2,7 @@
 {
     public abstract class BaseEntity
     {
-        Guid id;
+        public Guid _id { get; set; }
 
     }
 }

@@ -1,5 +1,6 @@
 
 using Dsw2026Ej15.Data;
+using Dsw2026Ej15.Domain;
 namespace Dsw2026Ej15.Api
 {
     public class Program
@@ -13,7 +14,9 @@ namespace Dsw2026Ej15.Api
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSingleton<PersistenceInMemory>();
+            builder.Services.AddSingleton<IPersistance, PersistenceInMemory>();
+            builder.Services.AddHealthChecks();
+
 
             var app = builder.Build();
 
@@ -24,14 +27,15 @@ namespace Dsw2026Ej15.Api
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
 
             app.MapControllers();
+            app.MapHealthChecks("/healthy");
 
+            app.Services.GetRequiredService<IPersistance>();
             app.Run();
         }
     }
