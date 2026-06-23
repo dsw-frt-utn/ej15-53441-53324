@@ -19,6 +19,7 @@ namespace Dsw2026Ej15.Api.Controllers
         }
 
         [HttpPost]
+        [Route("api/doctors")]
         public async Task<ActionResult> CreateDoctor([FromBody] DoctorModel.Request request)
         {
             if (string.IsNullOrWhiteSpace(request.Name))

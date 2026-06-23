@@ -33,7 +33,7 @@ namespace Dsw2026Ej15.Api
 
 
             app.MapControllers();
-            app.MapHealthChecks("/healthy");
+            app.MapHealthChecks("/healthy :)");
 
             app.Services.GetRequiredService<IPersistance>();
             app.Run();
