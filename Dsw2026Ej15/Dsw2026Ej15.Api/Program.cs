@@ -1,11 +1,12 @@
 
+using Dsw2026Ej15.Api.Middleware;
 using Dsw2026Ej15.Data;
 using Dsw2026Ej15.Domain;
 namespace Dsw2026Ej15.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +17,12 @@ namespace Dsw2026Ej15.Api
             builder.Services.AddSwaggerGen();
             builder.Services.AddSingleton<IPersistance, PersistenceInMemory>();
             builder.Services.AddHealthChecks();
+            
 
 
             var app = builder.Build();
+            app.UseMiddleware<ExceptionMiddleware>();
+
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -35,7 +39,8 @@ namespace Dsw2026Ej15.Api
             app.MapControllers();
             app.MapHealthChecks("/healthy :)");
 
-            app.Services.GetRequiredService<IPersistance>();
+            var persistence = app.Services.GetRequiredService<IPersistance>();
+            await persistence.LoadSpecialities();
             app.Run();
         }
     }

@@ -8,7 +8,7 @@ namespace Dsw2026Ej15.Data;
 
 public class PersistenceInMemory : IPersistance
 {
-    public PersistenceInMemory() { LoadSpecialities().GetAwaiter().GetResult(); } //uso el getawaiter porque no puedo usar directamente un metodo asincrono en un constructor. Entonces uso eso y despues get result pbloquea el hilo hasta que se complete la tarea asincrona.
+    public PersistenceInMemory() { } //uso el getawaiter porque no puedo usar directamente un metodo asincrono en un constructor. Entonces uso eso y despues get result pbloquea el hilo hasta que se complete la tarea asincrona.
 
     List<Doctor> Doctores = new List<Doctor>();
     List<Speciality> Especialidades = new List<Speciality>();

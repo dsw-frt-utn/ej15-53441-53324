@@ -58,15 +58,10 @@ namespace Dsw2026Ej15.Api.Controllers
         public async Task<IActionResult> GetDoctorById(Guid id)
         {
             var doctor = await _persistence.GetActiveDoctorByIdAsync(id);
-            try
-            {
-                if (doctor == null)
-                    throw new NotFoundException("No se encuentra");
-            }
-            catch (NotFoundException)
-            {
-                return NotFound();
-            }
+            
+          if (doctor == null)
+           throw new NotFoundException("No se encuentra");
+           
 
             var response = new DoctorModel.Response(doctor._name, doctor._licenseNumber, doctor._speciality._name);
             return Ok(response);
