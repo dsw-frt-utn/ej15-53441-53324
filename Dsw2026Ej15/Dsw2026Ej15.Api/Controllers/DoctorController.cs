@@ -3,6 +3,7 @@ using Dsw2026Ej15.Domain;
 using Dsw2026Ej15.Domain.Entities;
 using Dsw2026Ej15.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Dsw2026Ej15.Api.Middleware;
 using System.ComponentModel.DataAnnotations;
 
 namespace Dsw2026Ej15.Api.Controllers
