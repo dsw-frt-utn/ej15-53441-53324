@@ -8,5 +8,8 @@ namespace Dsw2026Ej15.Domain.Entities
     {
         public string _name { get; set; }
         public string _description { get; set; }
+
+        public Speciality() { }
+
     }
 }

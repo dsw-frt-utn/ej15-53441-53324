@@ -3,6 +3,7 @@ using Dsw2026Ej15.Domain;
 using Dsw2026Ej15.Domain.Entities;
 using Dsw2026Ej15.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Dsw2026Ej15.Api.Middleware;
 using System.ComponentModel.DataAnnotations;
 
 namespace Dsw2026Ej15.Api.Controllers
@@ -18,7 +19,10 @@ namespace Dsw2026Ej15.Api.Controllers
             _persistence = persistence;
         }
 
+        
+
         [HttpPost]
+        [Route("api/doctors")]
         public async Task<ActionResult> CreateDoctor([FromBody] DoctorModel.Request request)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
@@ -55,9 +59,10 @@ namespace Dsw2026Ej15.Api.Controllers
         public async Task<IActionResult> GetDoctorById(Guid id)
         {
             var doctor = await _persistence.GetActiveDoctorByIdAsync(id);
-
-            if (doctor == null)
-                throw new NotFoundException($"El médico con id {id} no existe o no está activo.");
+            
+          if (doctor == null)
+           throw new NotFoundException("No se encuentra");
+           
 
             var response = new DoctorModel.Response(doctor._name, doctor._licenseNumber, doctor._speciality._name);
             return Ok(response);
@@ -69,7 +74,7 @@ namespace Dsw2026Ej15.Api.Controllers
             var doctor = await _persistence.GetActiveDoctorByIdAsync(id);
 
             if (doctor == null)
-                throw new NotFoundException($"El médico con id {id} no existe o no está activo.");
+                throw new NotFoundException("No se encuentra");
 
             doctor._isActive = false;
             await _persistence.DeactivateDoctorAsync(id);

@@ -8,14 +8,14 @@ namespace Dsw2026Ej15.Data;
 
 public class PersistenceInMemory : IPersistance
 {
-    public PersistenceInMemory() { }
+    public PersistenceInMemory() { } //uso el getawaiter porque no puedo usar directamente un metodo asincrono en un constructor. Entonces uso eso y despues get result pbloquea el hilo hasta que se complete la tarea asincrona.
 
     List<Doctor> Doctores = new List<Doctor>();
     List<Speciality> Especialidades = new List<Speciality>();
 
-    private async Task LoadSpecialities()
+    public async Task LoadSpecialities()
     {
-        var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "specialities.json");
+        var jsonPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Sources", "specialities.json");
         var json = await File.ReadAllTextAsync(jsonPath);
         var specialities = JsonSerializer.Deserialize<List<SpecialityDto>>(
         json,
@@ -28,14 +28,14 @@ public class PersistenceInMemory : IPersistance
             {
                 Especialidades = specialities.Select(dto => new Speciality
                 {
-                    _id = Guid.NewGuid(),
+                    _id = dto.Id,
                     _name = dto.Name,
                     _description = dto.Description
                 }).ToList();
-
+                Console.WriteLine("hola");
             }
         }
-        catch (Exception ex) { }
+        catch (Exception ex) { Console.WriteLine(ex.Message); throw; }
 
     }
 
