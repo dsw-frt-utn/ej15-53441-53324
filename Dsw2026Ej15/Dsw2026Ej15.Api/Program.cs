@@ -11,20 +11,16 @@ namespace Dsw2026Ej15.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = "Data Source = (localdb)\\MSSQLLocalDB;DataBase=Dsw2026Ej15; Integrated security=true;Connect Timeout=30;Encrypt=true;TrustServerCertificate=true;";
-
             // Add services to the container.
-            builder.Services.AddDbContext<Dsw2026Ej15DbContext>(Options =>
-            {
-                Options.UseSqlServer(connectionString);
-            });
+            builder.Services.AddDbContext<Dsw2026Ej15DbContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSingleton<IPersistance, PersistenceInMemory>();
+            builder.Services.AddScoped<IPersistance, PersistenceEf>();
             builder.Services.AddHealthChecks();
             
 

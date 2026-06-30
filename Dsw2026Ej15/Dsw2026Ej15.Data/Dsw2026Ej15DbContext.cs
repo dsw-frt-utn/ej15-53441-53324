@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Text;
 
 namespace Dsw2026Ej15.Data
@@ -12,6 +13,9 @@ namespace Dsw2026Ej15.Data
         public DbSet<Speciality> Specialities { get; set; }
         public Dsw2026Ej15DbContext(DbContextOptions<Dsw2026Ej15DbContext> options) : base(options)
         {
+            //agregado por sugerencia de IA
+
+            
         }
 
 

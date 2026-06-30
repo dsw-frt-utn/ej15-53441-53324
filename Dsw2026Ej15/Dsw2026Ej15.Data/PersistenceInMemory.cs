@@ -4,7 +4,7 @@ using Dsw2026Ej15.Domain.Entities;
 using System.Text.Json;
 
 namespace Dsw2026Ej15.Data;
-
+/*
 
 public class PersistenceInMemory : IPersistance
 {
@@ -73,3 +73,4 @@ public class PersistenceInMemory : IPersistance
 
 }
 
+*/

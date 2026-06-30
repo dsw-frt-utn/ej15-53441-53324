@@ -19,6 +19,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
+    },
+      "ConnectionStrings":{
+      "DefaultConnection": "Server=localhost\\SQLEXPRESS;Database=Dsw2026Ej15Db;Trusted_Connection=True;TrustServerCertificate=True;"
     }
   }
 }
