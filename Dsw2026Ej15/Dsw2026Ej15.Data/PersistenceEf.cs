@@ -18,22 +18,16 @@ namespace Dsw2026Ej15.Data
 
         public async Task<IEnumerable<Doctor>> GetActiveDoctorsAsync()
         {
-            return await _context.Doctors
-                .Include(d => d._speciality)
-                .Where(d => d._isActive)
-                .ToListAsync();
+            return _context.Doctors
+                .Include(nameof(Doctor._speciality))
+                .Where(d => d._isActive);
         }
 
         public async Task<Doctor?> GetActiveDoctorByIdAsync(Guid id)
         {
-            var doctor = await _context.Doctors
-                .Include(d => d._speciality)
+           return await _context.Doctors
+                .Include(nameof(Doctor._speciality))
                 .FirstOrDefaultAsync(d => d._id == id && d._isActive);
-            if (doctor == null)
-            {
-                throw new NotFoundException($"Doctor with ID {id} not found.");
-            }
-            return doctor;
         }
 
         public async Task AddDoctorAsync(Doctor doctor)
@@ -45,12 +39,11 @@ namespace Dsw2026Ej15.Data
         public async Task DeactivateDoctorAsync(Guid id)
         {
             var doctor = await _context.Doctors.FindAsync(id);
-            if (doctor == null)
+            if (doctor != null)
             {
-                throw new NotFoundException($"Doctor with ID {id} not found.");
+                doctor._isActive = false;
+                await _context.SaveChangesAsync();
             }
-            doctor._isActive = false;
-            await _context.SaveChangesAsync();
         }
 
 
@@ -61,13 +54,7 @@ namespace Dsw2026Ej15.Data
 
         public async Task<Speciality?> GetSpecialityByIdAsync(Guid id)
         {
-            var speciality = await _context.Specialities.FindAsync(id);
-            if (speciality == null)
-            {
-                throw new NotFoundException($"Speciality with ID {id} not found.");
-            }
-            return speciality;
+            return await _context.Specialities.SingleOrDefaultAsync(s => s._id == id);
         }
-
     }
 }

@@ -1,4 +1,5 @@
 
+using Dsw2026Ej15.Api.Configurations;
 using Dsw2026Ej15.Api.Middleware;
 using Dsw2026Ej15.Data;
 using Dsw2026Ej15.Domain;
@@ -12,9 +13,8 @@ namespace Dsw2026Ej15.Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddDbContext<Dsw2026Ej15DbContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
+            
+            builder.Services.AddApplicationPersistence(builder.Configuration);
 
 
             builder.Services.AddControllers();
@@ -44,8 +44,7 @@ namespace Dsw2026Ej15.Api
             app.MapControllers();
             app.MapHealthChecks("/healthy :)");
 
-            var persistence = app.Services.GetRequiredService<IPersistance>();
-            await persistence.LoadSpecialities();
+            app.LoadSpecialityData();
             app.Run();
         }
     }
