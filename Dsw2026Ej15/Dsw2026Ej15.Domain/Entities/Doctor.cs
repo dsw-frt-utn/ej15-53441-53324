@@ -13,7 +13,7 @@ namespace Dsw2026Ej15.Domain.Entities
 
         public Guid? SpecialityId { get; set; }
 
-        private Doctor () { }
+        public Doctor () { }
 
         public Doctor(string name, string licenseNumber, Speciality speciality)
         {
